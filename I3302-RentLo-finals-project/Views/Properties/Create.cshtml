@@ -1,0 +1,68 @@
+﻿@model I3302_RentLo_finals_project.Models.Property
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Property</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PropertyTitle" class="control-label"></label>
+                <input asp-for="PropertyTitle" class="form-control" />
+                <span asp-validation-for="PropertyTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PropertyDescription" class="control-label"></label>
+                <input asp-for="PropertyDescription" class="form-control" />
+                <span asp-validation-for="PropertyDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PricePerDay" class="control-label"></label>
+                <input asp-for="PricePerDay" class="form-control" />
+                <span asp-validation-for="PricePerDay" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateCreated" class="control-label"></label>
+                <input asp-for="DateCreated" class="form-control" />
+                <span asp-validation-for="DateCreated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxGuests" class="control-label"></label>
+                <input asp-for="MaxGuests" class="form-control" />
+                <span asp-validation-for="MaxGuests" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumberOfBeds" class="control-label"></label>
+                <input asp-for="NumberOfBeds" class="form-control" />
+                <span asp-validation-for="NumberOfBeds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumberOfBathrooms" class="control-label"></label>
+                <input asp-for="NumberOfBathrooms" class="form-control" />
+                <span asp-validation-for="NumberOfBathrooms" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Favorites" class="control-label"></label>
+                <input asp-for="Favorites" class="form-control" />
+                <span asp-validation-for="Favorites" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
