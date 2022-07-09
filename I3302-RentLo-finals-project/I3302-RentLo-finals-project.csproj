@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <!--<Nullable>enable</Nullable>-->
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-I3302_RentLo_finals_project-4BB6648B-969E-4E18-A487-C6091C4D1FAF</UserSecretsId>
     <RootNamespace>I3302_RentLo_finals_project</RootNamespace>

@@ -5,20 +5,36 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="">
-        <a  class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@UserManager.GetUserAsync(User).Result.FirstName @UserManager.GetUserAsync(User).Result.LastName</a>
+        <a class="nav-link"><i class="bi bi-house-fill"></i> My Rentals</a>
     </li>
     <li class="">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link">Logout</button>
+        <a class="nav-link" asp-area="" asp-controller="Properties" asp-action="MyProperties">
+            <i class="bi bi-archive-fill"></i> My Properties
+        </a>
+    </li>
+    <li class="">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+            <i class="bi bi-person-fill"></i> @UserManager.GetUserAsync(User).Result.FirstName @UserManager.GetUserAsync(User).Result.LastName
+        </a>
+    </li>
+    <li class="">
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="nav-link btn btn-link">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
         </form>
     </li>
 }
 else
 {
     <li class="">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+            <i class="bi bi-person-plus-fill"></i> Register
+        </a>
     </li>
     <li class="">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
     </li>
 }
