@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace I3302_RentLo_finals_project.Controllers
 {
@@ -46,6 +47,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Properties/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -56,7 +58,8 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,PropertyTitle,PropertyDescription,PricePerDay,DateCreated,MaxGuests,NumberOfBeds,NumberOfBathrooms,Favorites")] Property @property)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Id,PropertyTitle,PropertyDescription,PricePerDay,MaxGuests,NumberOfBeds,NumberOfBathrooms,Favorites,CreatorId,CategoryId,CityId")] Property @property)
         {
             if (ModelState.IsValid)
             {
@@ -67,6 +70,7 @@ namespace I3302_RentLo_finals_project.Controllers
             return View(@property);
         }
 
+        [Authorize]
         // GET: Properties/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -88,6 +92,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,PropertyTitle,PropertyDescription,PricePerDay,DateCreated,MaxGuests,NumberOfBeds,NumberOfBathrooms,Favorites")] Property @property)
         {
             if (id != @property.Id)
@@ -118,6 +123,7 @@ namespace I3302_RentLo_finals_project.Controllers
             return View(@property);
         }
 
+        [Authorize]
         // GET: Properties/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -139,6 +145,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // POST: Properties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Property == null)

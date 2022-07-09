@@ -4,6 +4,7 @@ using I3302_RentLo_finals_project.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace I3302_RentLo_finals_project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220709102748_FixPropertyNullAttrs")]
+    partial class FixPropertyNullAttrs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +38,7 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.City", b =>
@@ -58,7 +60,7 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.HasIndex("Countryid");
 
-                    b.ToTable("Cities", (string)null);
+                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.Country", b =>
@@ -79,7 +81,7 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.Property", b =>
@@ -133,7 +135,7 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Property", (string)null);
+                    b.ToTable("Property");
                 });
 
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.UserPropertyRent", b =>
@@ -165,7 +167,7 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPropertyRents", (string)null);
+                    b.ToTable("UserPropertyRents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
