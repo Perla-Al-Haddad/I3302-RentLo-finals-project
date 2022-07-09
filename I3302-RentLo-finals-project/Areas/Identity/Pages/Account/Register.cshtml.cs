@@ -71,6 +71,12 @@ namespace I3302_RentLo_finals_project.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -113,7 +119,7 @@ namespace I3302_RentLo_finals_project.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                var user = new ApplicationUser { FirstName = Input.FirstName, LastName = Input.LastName, Email = Input.Email, PasswordHash = Input.Password };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -154,20 +160,20 @@ namespace I3302_RentLo_finals_project.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
-
-        private ApplicationUser CreateUser()
-        {
-            try
-            {
-                return Activator.CreateInstance<ApplicationUser>();
-            }
-            catch
-            {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-            }
-        }
+        /*
+                private ApplicationUser CreateUser()
+                {
+                    try
+                    {
+                        return Activator.CreateInstance<ApplicationUser>();
+                    }
+                    catch
+                    {
+                        throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                            $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                            $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                    }
+                }*/
 
         private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
