@@ -1,0 +1,55 @@
+﻿@model I3302_RentLo_finals_project.Models.UserPropertyRent
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row d-flex justify-content-center   ">
+    <div class="col-md-6">
+        <div class="card card-rounded grid-margin">
+            <div class="card-body">
+                <h2 class="pb-2" style="border-bottom: 1px solid #ddd;">Rent Property</h2>
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="StartDate" class="control-label mt-2"></label>
+                        <input asp-for="StartDate" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group pb-4" style="border-bottom: 1px solid #ddd;">
+                        <label asp-for="EndDate" class="control-label mt-2"></label>
+                        <input asp-for="EndDate" class="form-control" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <h5>Total Cost</h5>
+                            <h3><i class="fa-solid fa-dollar-sign"></i> 515.85</h3>
+                        </div>
+                        <div class="col-6">
+                            <h5>Total Number Of Days</h5>
+                            <h3>15 days</h3>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <a class="btn btn-secondary w-100" asp-controller="Properties" asp-action="Index">Cancel</a>
+                        </div>
+                        <div class="col-6">
+                            <input type="submit" value="Next" class="btn btn-primary w-100" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}
