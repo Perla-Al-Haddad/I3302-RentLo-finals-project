@@ -14,10 +14,12 @@ namespace I3302_RentLo_finals_project.Controllers
     public class PropertiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEnumerable<City> citiesList;
 
         public PropertiesController(ApplicationDbContext context)
         {
             _context = context;
+            citiesList = _context.Cities;
         }
 
         // GET: Properties
@@ -50,7 +52,18 @@ namespace I3302_RentLo_finals_project.Controllers
         [Authorize]
         public IActionResult Create()
         {
+            IEnumerable<Category> categoriesList = _context.Categories;
+            ViewBag.categoriesList = categoriesList;
+            IEnumerable<Country> countriesList = _context.Countries;
+            ViewBag.countriesList = countriesList;
             return View();
+        }
+        [HttpGet]
+        public IEnumerable<City> OnGetCitiesByCountryId()
+        {
+            int countryId = Int32.Parse(Request.Query["countryId"]);
+            var cities = _context.Cities.Where(x => x.CountryId == countryId);
+            return cities;
         }
 
         // POST: Properties/Create
