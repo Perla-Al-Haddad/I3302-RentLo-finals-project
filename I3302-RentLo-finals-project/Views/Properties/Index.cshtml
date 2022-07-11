@@ -1,77 +1,95 @@
-﻿@model IEnumerable<I3302_RentLo_finals_project.Models.Property>
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<I3302_RentLo_finals_project.Models.Property>
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="col-12">
+    <div class="row">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PricePerDay)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MaxGuests)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfBeds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfBathrooms)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Favorites)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PropertyTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PropertyDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PricePerDay)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCreated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxGuests)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumberOfBeds)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumberOfBathrooms)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Favorites)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div class="col-12 p-0">
+            <div class="card grid-margin card-rounded">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justifty-content-between">
+                        <div>
+                            <h1 class="m-0 col">Property Catalog</h1>
+                        </div>
+                        @if (SignInManager.IsSignedIn(User)) {
+                            <div class="col d-flex justify-content-end">
+                                <a class="btn btn-secondary" asp-action="Create">
+                                    <i class="bi bi-plus-circle"></i> Create New
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-4 my-2 col-md-6 p-0">
+                        <div class="card grid-margin card-rounded h-100">
+                            <div class="card-body">
+                                <div class="h-100 d-flex flex-column justify-content-between">
+                                    <div class="h-100">
+                                        <h2 class="property-title">
+                                            <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.PropertyTitle)</a>
+                                        </h2>
+                                        <p class="property-description">
+                                            @if (item.PropertyDescription == null)
+                                            {
+                                                <span>There is no description for this property.</span>
+                                            }
+                                            @Html.DisplayFor(modelItem => item.PropertyDescription)
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <h4>
+                                                <i class="fa-solid fa-dollar-sign"></i> @Html.DisplayFor(modelItem => item.PricePerDay) <br/><small style="text-transform: none;">per night</small>
+                                            </h4>
+                                        </div>
+                                        <div class="col-4">
+                                            <h4>
+                                                @Html.DisplayFor(modelItem => item.MaxGuests)
+                                                <i class="fa-solid fa-people-group"></i>
+                                            </h4>
+                                        </div>
+                                        <div class="col-4">
+                                            <h4>
+                                                @Html.DisplayFor(modelItem => item.NumberOfBeds)
+                                                <i class="fa-solid fa-bed"></i>
+                                            </h4>
+                                        </div>
+                                        <div class="col-4">
+                                            <h4>
+                                                @Html.DisplayFor(modelItem => item.NumberOfBathrooms)
+                                                <i class="fa-solid fa-shower"></i>
+                                            </h4>
+                                        </div>
+                                        <div class="col-4">
+                                            <h4>
+                                                @Html.DisplayFor(modelItem => item.Favorites)
+                                                <i class="fa-solid fa-heart"></i>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    *@
+                }
+            </div>
+        </div>
+    </div>
+</div>
