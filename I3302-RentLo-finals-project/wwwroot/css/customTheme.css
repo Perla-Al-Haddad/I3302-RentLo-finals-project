@@ -11,7 +11,7 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
-@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
 
 :root {
     --bs-blue: #007bff;
@@ -56,12 +56,12 @@
     --bs-black-rgb: 0, 0, 0;
     --bs-body-color-rgb: 85, 89, 92;
     --bs-body-bg-rgb: 255, 255, 255;
-    --bs-font-sans-serif: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --bs-font-sans-serif: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
     --bs-body-font-family: var(--bs-font-sans-serif);
-    --bs-body-font-size: 1rem;
-    --bs-body-font-weight: 400;
+    --bs-body-font-size: 1.2rem;
+    --bs-body-font-weight: 500;
     --bs-body-line-height: 1.5;
     --bs-body-color: #55595c;
     --bs-body-bg: #fff;
@@ -589,7 +589,7 @@ progress {
 
 .initialism {
     font-size: 0.875em;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 .blockquote {
@@ -12190,7 +12190,7 @@ fieldset:disabled .btn {
 
 .navbar {
     font-size: 0.875rem;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 }
 
@@ -12225,7 +12225,7 @@ fieldset:disabled .btn {
 
 .btn {
     font-size: 0.875rem;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 .btn-sm, .btn-group-sm > .btn {
@@ -12265,7 +12265,7 @@ body {
 }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
-    text-transform: uppercase;
+    text-transform: capitalize;
     letter-spacing: 3px;
 }
 
@@ -12275,7 +12275,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 
 th {
     font-size: 0.875rem;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 .table th,
