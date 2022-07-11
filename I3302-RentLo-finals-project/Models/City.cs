@@ -10,6 +10,9 @@ namespace I3302_RentLo_finals_project.Models
         [Required]
         public string CityName { get; set; }
         [Required]
+        [ForeignKey("Country")]
+        public int CountryId { get; set; }
+        [Required]
         public Country Country { get; set; }
     }
 }
