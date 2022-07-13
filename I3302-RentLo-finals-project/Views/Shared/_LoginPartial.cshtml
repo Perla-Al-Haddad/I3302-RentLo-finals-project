@@ -8,7 +8,7 @@
         <a class="nav-link"><i class="fa-solid fa-person-shelter"></i> My Rentals</a>
     </li>
     <li class="">
-        <a class="nav-link" asp-area="" asp-controller="Properties" asp-action="MyProperties">
+        <a class="nav-link" asp-area="" asp-route-id="@UserManager.GetUserAsync(User).Result.Id" asp-controller="Properties" asp-action="MyProperties">
             <i class="fa-solid fa-house-user"></i> My Properties
         </a>
     </li>

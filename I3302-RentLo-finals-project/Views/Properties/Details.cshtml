@@ -1,4 +1,7 @@
-﻿@model I3302_RentLo_finals_project.Models.Property
+﻿@using Microsoft.AspNetCore.Identity
+@model I3302_RentLo_finals_project.Models.Property
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Details";
@@ -24,11 +27,21 @@
                             <span>
                                 @Html.DisplayFor(model => model.DateCreated)
                             </span>
+                            <span>
+                                |
+                            </span>
+                            <span>
+                                <i class="fa-solid fa-location-dot"></i> 
+                                @ViewBag.CountryName - @ViewBag.CityName
+                            </span>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between gap-3">
-                        <a asp-action="Edit" class="btn btn-info" asp-route-id="@Model?.Id"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-                        <button class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                        @if (SignInManager.IsSignedIn(User) && (Model.CreatorId == @UserManager.GetUserAsync(User).Result.Id))
+                        {
+                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@Model?.Id"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                            <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</a>
+                        }
                         <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-arrow-left"></i> Back to List</a>
                     </div>
                 </div>
@@ -38,28 +51,33 @@
     </div>
     <div class="row">
         <div class="col-md-8 p-0">
-            <div class="card card-rounded grid-margin mx-3 mb-3 p-0">
-                <div class="card-body p-0">
-                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner card-rounded">
-                            <div class="carousel-item active">
-                                <img src="https://localhost:44398/img/forest-house.jpg" class="d-block w-100" alt="...">
+            @if (@ViewBag.PropertyImages.Count > 0) {
+                <div class="card card-rounded grid-margin mx-3 mb-3 p-0">
+                    <div class="card-body p-0">
+                        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner card-rounded">
+                                @{ int i = 0; }
+                                @foreach (var image in @ViewBag.PropertyImages)
+                                {
+                                    i++;  
+                                    var active = i == 1 ? "active" : "";  
+                                    <div class="carousel-item @active">
+                                        <img src="https://localhost:44398/@image.ImagePath" class="d-block w-100" alt="...">
+                                    </div>
+                                }
                             </div>
-                            <div class="carousel-item">
-                                <img src="https://localhost:44398/img/forest-house.jpg" class="d-block w-100" alt="...">
-                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
                     </div>
                 </div>
-            </div>
+            }
             <div class="card card-rounded grid-margin mb-3">
                 <div class="card-body">
                     <p class="m-0">
@@ -120,8 +138,28 @@
                                 </h4>
                             </td>
                         </tr>
+                        <tr>
+                            <th>
+                                Country
+                            </th>
+                            <td>
+                                <h4>
+                                    <i class="fa-solid fa-location-dot"></i> @ViewBag.CountryName
+                                </h4>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                City
+                            </th>
+                            <td>
+                                <h4>
+                                    <i class="fa-solid fa-map-location-dot"></i> @ViewBag.CityName
+                                </h4>
+                            </td>
+                        </tr>
                     </table>
-                    <a class="btn btn-primary w-100" asp-area="" asp-controller="UserPropertyRents" asp-action="Create">
+                    <a class="btn btn-primary w-100" asp-area="" asp-route-id="@Model.Id" asp-controller="UserPropertyRents" asp-action="Create">
                         <i class="fa-solid fa-square-plus"></i> Rent Property
                     </a>
                 </div>
@@ -129,69 +167,3 @@
         </div>
     </div>
 </div>
-
-@*
-    <div class="card card-rounded grid-margin">
-    <div class="card-body">
-    <div>
-    <h1>Details</h1>
-    <h4>Property</h4>
-    <hr />
-    <dl class="row">
-    <dt >
-    @Html.DisplayNameFor(model => model.PropertyTitle)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.PropertyTitle)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.PropertyDescription)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.PropertyDescription)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.PricePerDay)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.PricePerDay)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.DateCreated)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.DateCreated)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.MaxGuests)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.MaxGuests)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.NumberOfBeds)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.NumberOfBeds)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.NumberOfBathrooms)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.NumberOfBathrooms)
-    </dd>
-    <dt >
-    @Html.DisplayNameFor(model => model.Favorites)
-    </dt>
-    <dd >
-    @Html.DisplayFor(model => model.Favorites)
-    </dd>
-    </dl>
-    </div>
-    <div class="d-flex justify-content-between">
-    <a asp-action="Edit" class="btn btn-info" asp-route-id="@Model?.Id">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
-    </div>
-    </div>
-*@

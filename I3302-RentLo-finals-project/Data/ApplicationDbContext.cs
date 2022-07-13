@@ -22,5 +22,7 @@ namespace I3302_RentLo_finals_project.Data
         public DbSet<I3302_RentLo_finals_project.Models.Property> Property { get; set; }
 
         public DbSet<UserPropertyRent> UserPropertyRents { get; set; }
+
+        public DbSet<Image> Images { get; set; }
     }
 }
