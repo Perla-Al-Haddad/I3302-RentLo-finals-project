@@ -1,4 +1,7 @@
-﻿@model I3302_RentLo_finals_project.Models.UserPropertyRent
+﻿@using Microsoft.AspNetCore.Identity
+@model I3302_RentLo_finals_project.Models.UserPropertyRent
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Create";
@@ -14,13 +17,19 @@
                 <form asp-action="Create">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
+                        <input asp-for="RenterId" value="@UserManager.GetUserAsync(User).Result.Id" type="hidden" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="PropertyId" value="@ViewBag.PropertyId" class="form-control" type="hidden" />
+                    </div>
+                    <div class="form-group">
                         <label asp-for="StartDate" class="control-label mt-2"></label>
-                        <input asp-for="StartDate" class="form-control" />
+                        <input asp-for="StartDate" id="check-in-date" onchange="updateCheckOutDate(this)" min="@DateTime.Now.ToString("yyyy-MM-ddThh:mm")" class="form-control" />
                         <span asp-validation-for="StartDate" class="text-danger"></span>
                     </div>
                     <div class="form-group pb-4" style="border-bottom: 1px solid #ddd;">
                         <label asp-for="EndDate" class="control-label mt-2"></label>
-                        <input asp-for="EndDate" class="form-control" />
+                        <input asp-for="EndDate" id="check-out-date" min="@DateTime.Now.ToString("yyyy-MM-ddThh:mm")" class="form-control" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
                     <div class="row mt-4">
@@ -49,7 +58,17 @@
 
 
 @section Scripts {
-    @{
+<script>
+    function updateCheckOutDate(self) {
+        $('#check-out-date').attr('min', $(self).val());
+    }
+
+    $(document).ready(() => {
+        $('#check-in-date').val('@DateTime.Now.ToString("yyyy-MM-ddThh:mm")');
+    });
+</script>
+
+@{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }
 }

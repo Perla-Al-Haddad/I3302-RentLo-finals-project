@@ -44,8 +44,15 @@ namespace I3302_RentLo_finals_project.Views.UserPropertyRents
         }
 
         // GET: UserPropertyRents/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            
+            ViewBag.PropertyId = id;
+
             return View();
         }
 
@@ -54,7 +61,7 @@ namespace I3302_RentLo_finals_project.Views.UserPropertyRents
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CreatedDate,StartDate,EndDate")] UserPropertyRent userPropertyRent)
+        public async Task<IActionResult> Create([Bind("RenterId,PropertyId,CreatedDate,StartDate,EndDate")] UserPropertyRent userPropertyRent)
         {
             if (ModelState.IsValid)
             {
