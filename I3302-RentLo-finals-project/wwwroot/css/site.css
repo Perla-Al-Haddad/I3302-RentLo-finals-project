@@ -1,3 +1,6 @@
+:root {
+}
+
 html {
   font-size: 14px;
 }
@@ -15,7 +18,7 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #f9f2ff;
+    background-color: var(--bs-bg-light);
     color: #211138;
 }
 
@@ -29,24 +32,34 @@ body {
     display: -webkit-box;
     overflow: hidden !important;
     text-overflow: ellipsis;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 2;
 }
 
 .card-rounded {
-    border-radius: 15px;
+    border-radius: 9px;
 }
 .card-rounded-top {
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
 }
 
 .grid-margin {
     margin: 0.6rem;
 }
 
+.card-body {
+    padding: 1.25rem;
+}
+
 .card {
-    padding: 1rem;
     border: none;
+}
+
+.property-card {
+    min-height: 350px !important;
+}
+.property-card h4 {
+    color: #74C8F8;
 }
 
 .btn {
@@ -64,5 +77,32 @@ body {
     position: absolute;
     top: 0;
     background-color: #000;
-    opacity: .3;
+    opacity: .4;
 }
+
+.datepicker td, th {
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.dropdown-menu {
+    color: var(--bs-primary);
+}
+
+.input-daterange input {
+    font-weight: 600;
+}
+
+.disabled-date {
+    color: var(--bs-danger) !important;
+    text-decoration: line-through;
+    opacity: 0.35;
+}
+
+.datepicker table tr td.active {
+    background-color: var(--bs-gray-900) !important;
+    background-image: none !important;
+}
+

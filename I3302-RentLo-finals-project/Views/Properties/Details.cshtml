@@ -18,26 +18,21 @@
                         </h2>
                         <div class="d-flex gap-3">
                             <span>
-                                <button style="background-color: transparent; border: none;"><i class="fa-regular fa-heart"></i></button>
-                                @Html.DisplayFor(model => model.Favorites) Favorites
-                            </span>
-                            <span>
-                                |
-                            </span>
-                            <span>
                                 @Html.DisplayFor(model => model.DateCreated)
                             </span>
                             <span>
                                 |
                             </span>
                             <span>
-                                <i class="fa-solid fa-location-dot"></i> 
+                                <i class="fa-solid fa-location-dot"></i>
                                 @ViewBag.CountryName - @ViewBag.CityName
                             </span>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between gap-3">
-                        @if (SignInManager.IsSignedIn(User) && (Model.CreatorId == @UserManager.GetUserAsync(User).Result.Id))
+                        @if (SignInManager.IsSignedIn(User) &&
+                        ((Model.CreatorId == @UserManager.GetUserAsync(User).Result.Id && User.IsInRole("PropertyManagers")) ||
+                        User.IsInRole("PropertyAdministrators")))
                         {
                             <a asp-action="Edit" class="btn btn-info" asp-route-id="@Model?.Id"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
                             <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</a>
@@ -51,16 +46,19 @@
     </div>
     <div class="row">
         <div class="col-md-8 p-0">
-            @if (@ViewBag.PropertyImages.Count > 0) {
+            @if (@ViewBag.PropertyImages.Count > 0)
+            {
                 <div class="card card-rounded grid-margin mx-3 mb-3 p-0">
                     <div class="card-body p-0">
                         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner card-rounded">
-                                @{ int i = 0; }
+                                @{
+                                    int i = 0;
+                                }
                                 @foreach (var image in @ViewBag.PropertyImages)
                                 {
-                                    i++;  
-                                    var active = i == 1 ? "active" : "";  
+                                    i++;
+                                    var active = i == 1 ? "active" : "";
                                     <div class="carousel-item @active">
                                         <img src="https://localhost:44398/@image.ImagePath" class="d-block w-100" alt="...">
                                     </div>
@@ -110,36 +108,6 @@
                         </tr>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.MaxGuests)
-                            </th>
-                            <td>
-                                <h4>
-                                    @Html.DisplayFor(model => model.MaxGuests) <i class="fa-solid fa-people-group"></i>
-                                </h4>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.NumberOfBeds)
-                            </th>
-                            <td>
-                                <h4>
-                                    @Html.DisplayFor(model => model.NumberOfBeds) <i class="fa-solid fa-bed"></i>
-                                </h4>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.NumberOfBathrooms)
-                            </th>
-                            <td>
-                                <h4>
-                                    @Html.DisplayFor(model => model.NumberOfBathrooms) <i class="fa-solid fa-shower"></i>
-                                </h4>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
                                 Country
                             </th>
                             <td>
@@ -159,9 +127,16 @@
                             </td>
                         </tr>
                     </table>
-                    <a class="btn btn-primary w-100" asp-area="" asp-route-id="@Model.Id" asp-controller="UserPropertyRents" asp-action="Create">
-                        <i class="fa-solid fa-square-plus"></i> Rent Property
-                    </a>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        @if (Model.CreatorId != @UserManager.GetUserAsync(User).Result.Id)
+                        {
+                            <a class="btn btn-primary w-100" asp-area="" asp-route-id="@Model.Id" asp-controller="UserPropertyRents" asp-action="Create">
+                                <i class="fa-solid fa-square-plus"></i> Rent Property
+                            </a>
+                        }
+                    }
                 </div>
             </div>
         </div>

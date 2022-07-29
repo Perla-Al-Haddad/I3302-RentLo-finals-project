@@ -3,36 +3,44 @@
 @{
     ViewData["Title"] = "Create";
 }
+<div class="col-12">
+    <div class="card card-rounded grid-margin">
+        <div class="card-body">
 
-<h1>Create</h1>
+            <h1>Create</h1>
 
-<h4>Country</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ISOCode" class="control-label"></label>
-                <input asp-for="ISOCode" class="form-control" />
-                <span asp-validation-for="ISOCode" class="text-danger"></span>
+            <h4>Country</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="ISOCode" class="control-label"></label>
+                            <input asp-for="ISOCode" class="form-control" />
+                            <span asp-validation-for="ISOCode" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="CountryName" class="control-label"></label>
+                            <input asp-for="CountryName" class="form-control" />
+                            <span asp-validation-for="CountryName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="CountryName" class="control-label"></label>
-                <input asp-for="CountryName" class="form-control" />
-                <span asp-validation-for="CountryName" class="text-danger"></span>
+
+            <div>
+                <a asp-action="Index">Back to List</a>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

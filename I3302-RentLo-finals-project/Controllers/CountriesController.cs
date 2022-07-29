@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace I3302_RentLo_finals_project.Controllers
 {
@@ -20,6 +21,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Countries
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Index()
         {
               return _context.Countries != null ? 
@@ -28,6 +30,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Countries/Details/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Countries == null)
@@ -46,6 +49,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Countries/Create
+        [Authorize(Roles = "PropertyAdministrators")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +60,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Create([Bind("id,ISOCode,CountryName")] Country country)
         {
             if (ModelState.IsValid)
@@ -68,6 +73,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Countries/Edit/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Countries == null)
@@ -88,6 +94,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int id, [Bind("id,ISOCode,CountryName")] Country country)
         {
             if (id != country.id)
@@ -119,6 +126,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Countries/Delete/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Countries == null)
@@ -139,6 +147,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // POST: Countries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Countries == null)
@@ -155,6 +164,7 @@ namespace I3302_RentLo_finals_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "PropertyAdministrators")]
         private bool CountryExists(int id)
         {
           return (_context.Countries?.Any(e => e.id == id)).GetValueOrDefault();

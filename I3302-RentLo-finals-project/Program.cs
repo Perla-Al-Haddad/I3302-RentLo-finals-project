@@ -2,8 +2,10 @@ using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using I3302_RentLo_finals_project.Areas.Identity.Data;
 using ApplicationDbContext = I3302_RentLo_finals_project.Data.ApplicationDbContext;
+using Microsoft.AspNetCore.Authorization;
+using I3302_RentLo_finals_project.Authorization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -14,12 +16,43 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+// Authorization handlers.
+builder.Services.AddScoped<IAuthorizationHandler,
+                      UserIsOwnerAuthorizationHandler>();
+
+builder.Services.AddScoped<IAuthorizationHandler,
+                      PropertyAdministratorsAuthorizationHandler>();
+
+builder.Services.AddScoped<IAuthorizationHandler,
+                      PropertyManagerAuthorizationHandler>();
+
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+    // requires using Microsoft.Extensions.Configuration;
+    // Set password with the Secret Manager tool.
+    // dotnet user-secrets set SeedUserPW <pw>
+
+    var testUserPw = builder.Configuration.GetValue<string>("SeedUserPW");
+
+    await SeedData.Initialize(services, testUserPw);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -43,7 +76,9 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Properties}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
+
+

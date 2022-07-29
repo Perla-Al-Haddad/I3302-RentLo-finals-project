@@ -1,69 +1,128 @@
-﻿@model I3302_RentLo_finals_project.Models.Property
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model I3302_RentLo_finals_project.Models.Property
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+@section Scripts {
+<script>
+    function updateCitiesDropdown(t) {
+        $.ajax({
+            type: "GET",
+            url: '/Properties/OnGetCitiesByCountryId?countryId=' + $(t).val(),
+            success: function (data) {
+                $('#city-select-container').removeClass('d-none');
+                let options_html = "";
+                for (let i = 0; i < data.length; i++)
+                    options_html += "<option value='" + data[i].id + "'>" + data[i].cityName + "</option>";
+                $('#city-select').html(options_html);
+            },
+            error: function (result) {
+                alert("fail");
+            }
+        });
+    }
 
-<h4>Property</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="PropertyTitle" class="control-label"></label>
-                <input asp-for="PropertyTitle" class="form-control" />
-                <span asp-validation-for="PropertyTitle" class="text-danger"></span>
+    function deleteImage(t) {
+        let parent = $(t).parent()[0];
+        $(parent).addClass("d-none");
+        $.ajax({
+            type: "GET",
+            url: '/Images/Delete?imageId=' + $(t).attr('value'),
+            success: function (data) {},
+            error: function (result) {
+                alert("fail");
+            }
+        });
+    }
+</script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+<div class="card card-rounded grid-margin">
+    <div class="card-body">
+        <h1 class="pb-2" style="border-bottom: 1px solid #ddd">Edit Property</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="CreatorId" type="hidden" value="@ViewBag.creatorId" class="form-control" />
+                    <input asp-for="DateCreated" type="hidden" class="form-control" />
+                    <div class="form-group mb-2">
+                        <label asp-for="PropertyTitle" class="control-label"></label>
+                        <input asp-for="PropertyTitle" class="form-control" />
+                        <span asp-validation-for="PropertyTitle" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label asp-for="PropertyDescription" class="control-label"></label>
+                        <textarea rows="5" asp-for="PropertyDescription" class="form-control"></textarea>
+                        <span asp-validation-for="PropertyDescription" class="text-danger"></span>
+                    </div>
+                    <div class="custom-file mb-3">
+                        <label class="form-label" class="custom-file-label" asp-for="ImagePaths" for="validatedCustomFile">Upload Property Images</label>
+                        <input type="file" multiple='true' class="form-control" asp-for="ImagePaths" id="validatedCustomFile">
+                        <span asp-validation-for="ImagePaths"></span>
+                    </div>
+                    <div>
+                        <div class="row py-3 pb-4 align-items-center">
+                            @foreach (var image in @ViewBag.PropertyImages)
+                            {
+                                <div class="col-3 card pb-3">
+                                    <a onclick="deleteImage(this)" value="@image.Id" class="w-100 d-flex justify-content-center align-items-center" style="position: relative">
+                                        <img src="https://localhost:44398/@image.ImagePath" class="d-block shadow w-100 rounded-3" alt="...">
+                                        <div class="overlay-div rounded-3" style="opacity: 0.3"></div>
+                                        <i style="position: absolute;" class="text-white fa-solid fa-trash-can fa-2xl"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label asp-for="PricePerDay" class="control-label"></label>
+                        <input asp-for="PricePerDay" class="form-control" />
+                        <span asp-validation-for="PricePerDay" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label asp-for="CategoryId" class="control-label"></label>
+                        <select class="form-select" asp-for="CategoryId">
+                            @foreach (var item in ViewBag.categoriesList)
+                            {
+                                <option value="@item.Id">@item.CategoryDescription</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="control-label">Property Location</label>
+                        <select class="form-select" name="CountryId" onChange="updateCitiesDropdown(this)">
+                            @foreach (var item in ViewBag.countriesList)
+                            {
+                                <option value="@item.id">@item.CountryName</option>
+                            }
+                        </select>
+                    </div>
+                    <div id="city-select-container" class="form-group mb-2">
+                        <label asp-for="CityId" class="control-label"></label>
+                        <select id="city-select" asp-for="CityId" class="form-select">
+                            @foreach (var item in ViewBag.citiesList)
+                            {
+                                <option value="@item.Id">@item.CityName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="PropertyDescription" class="control-label"></label>
-                <input asp-for="PropertyDescription" class="form-control" />
-                <span asp-validation-for="PropertyDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PricePerDay" class="control-label"></label>
-                <input asp-for="PricePerDay" class="form-control" />
-                <span asp-validation-for="PricePerDay" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxGuests" class="control-label"></label>
-                <input asp-for="MaxGuests" class="form-control" />
-                <span asp-validation-for="MaxGuests" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberOfBeds" class="control-label"></label>
-                <input asp-for="NumberOfBeds" class="form-control" />
-                <span asp-validation-for="NumberOfBeds" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberOfBathrooms" class="control-label"></label>
-                <input asp-for="NumberOfBathrooms" class="form-control" />
-                <span asp-validation-for="NumberOfBathrooms" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Favorites" class="control-label"></label>
-                <input asp-for="Favorites" class="form-control" />
-                <span asp-validation-for="Favorites" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+

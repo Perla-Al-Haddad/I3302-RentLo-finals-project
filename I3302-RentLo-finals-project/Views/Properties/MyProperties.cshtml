@@ -16,7 +16,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justifty-content-between">
                         <div>
-                            <h1 class="m-0 col">Property Catalog</h1>
+                            <h1 class="m-0 col">Property Catalogue</h1>
                         </div>
                         @if (SignInManager.IsSignedIn(User))
                         {
@@ -36,20 +36,24 @@
                 @foreach (var item in Model)
                 {
                     <div class="col-lg-4 my-2 col-md-6 p-0">
-                        <div class="card grid-margin card-rounded h-100 d-flex flex-column justify-content-between p-0">
+                        <div class="card grid-margin card-rounded property-card h-100 d-flex flex-column justify-content-between p-0">
                             @if (@item.MainImage.ImagePath != null)
                             {
                                 <div style="position: relative">
-                                    <img class="card-rounded-top card-img-top" src="../../@item.MainImage.ImagePath" alt="@item.MainImage.ImagePath" />
+                                    <img class="card-rounded-top card-img-top" src="~/@item.MainImage.ImagePath" />
                                     <div class="overlay-div card-rounded-top"></div>
                                 </div>
                             }
-                            @{ var textColor = @item.MainImage.ImagePath != null ? "text-white" : ""; }
+                            @{
+                                var textColor = @item.MainImage.ImagePath != null ? "text-white" : "";
+                            }
                             <div class="card-img-overlay">
                                 <div class="h-100">
                                     <div class="h-100 p-2">
                                         <h2 class="property-title">
-                                            <a class="@textColor" asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.PropertyTitle)</a>
+                                            <a class="@textColor" asp-action="Details" asp-route-id="@item.Id">
+                                                @Html.DisplayFor(modelItem => item.PropertyTitle)
+                                            </a>
                                         </h2>
                                         <p class="property-description @textColor" style="@textColor">
                                             @if (item.PropertyDescription == null)
@@ -61,45 +65,26 @@
                                     </div>
                                 </div>
                             </div>
-                            @{ var style = @item.MainImage.ImagePath == null ? "position: absolute; bottom: 0" : ""; }
-                            <div class="row px-4 pb-3" style="@style">
-                                <div class="col-4">
-                                    <h4>
-                                        <i class="fa-solid fa-dollar-sign"></i> @Html.DisplayFor(modelItem => item.PricePerDay) <br /><small style="text-transform: none;">per night</small>
+                            @{
+                                var style = @item.MainImage.ImagePath == null ? "position: absolute; bottom: 0" : "";
+                            }
+                            <div class="row px-4 pb-3 w-100" style="@style">
+                                <div class="col-6">
+                                    <h4 class="text-secondary">
+                                        <i class="fa-solid fa-dollar-sign"></i>
+                                        @Html.DisplayFor(modelItem => item.PricePerDay)
+                                        <br /><small style="text-transform: none;">per day</small>
                                     </h4>
                                 </div>
-                                <div class="col-4">
-                                    <h4>
-                                        @Html.DisplayFor(modelItem => item.MaxGuests)
-                                        <i class="fa-solid fa-people-group"></i>
-                                    </h4>
-                                </div>
-                                <div class="col-4">
-                                    <h4>
-                                        @Html.DisplayFor(modelItem => item.NumberOfBeds)
-                                        <i class="fa-solid fa-bed"></i>
-                                    </h4>
-                                </div>
-                                <div class="col-4">
-                                    <h4>
-                                        @Html.DisplayFor(modelItem => item.NumberOfBathrooms)
-                                        <i class="fa-solid fa-shower"></i>
-                                    </h4>
-                                </div>
-                                <div class="col-4">
-                                    <h4>
-                                        @Html.DisplayFor(modelItem => item.Favorites)
-                                        <i class="fa-solid fa-heart"></i>
+                                <div class="col-6">
+                                    <h4 class="text-secondary">
+                                        <i class="fa-solid fa-house"></i>
+                                        @item.Category.CategoryDescription
                                     </h4>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @*
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    *@
                 }
             </div>
         </div>

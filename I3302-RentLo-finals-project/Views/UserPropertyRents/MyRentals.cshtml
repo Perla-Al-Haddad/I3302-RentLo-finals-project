@@ -1,0 +1,363 @@
+﻿@model IEnumerable<I3302_RentLo_finals_project.Models.UserPropertyRent>
+
+@{
+    ViewData["Title"] = "MyRentals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+<script>
+    function cancelRental(t) {
+        let parent = $("#rental-container-" + $(t).attr('value'))[0];
+        $(parent).addClass("d-none");
+        $.ajax({
+            type: "GET",
+            url: '/UserPropertyRents/CancelRental?rentalId=' + $(t).attr('value'),
+            success: function (data) {},
+            error: function (result) {
+                alert("fail");
+                console.log(result);
+            }
+        });
+    }
+</script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<div class="col-12">
+    <div class="row">
+        <div class="col-12 p-0">
+            <div class="card grid-margin card-rounded">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justifty-content-between">
+                        <div>
+                            <h1 class="m-0 col">My Rentals</h1>
+                        </div>
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-secondary" asp-controller="Properties" asp-action="Index">
+                                Back to Catalogue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 p-0">
+            <div class="card grid-margin card-rounded">
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="active-tab" data-bs-toggle="tab"
+                                    data-bs-target="#active" type="button" role="tab" aria-controls="home" aria-selected="true">
+                                Active Rentals
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="future-tab" data-bs-toggle="tab"
+                                    data-bs-target="#future" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                                Up-Coming Rentals
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="past-tab" data-bs-toggle="tab"
+                                    data-bs-target="#past" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                                Past Rentals
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+                <div class="col-12">
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            @if (@item.state == "active")
+                            {
+                                <div class="col-lg-6 my-2 col-md-6 p-0">
+                                    <div class="card grid-margin card-rounded h-100 d-flex flex-column justify-content-between p-0 property-card">
+                                        @if (@item.Property.MainImage.ImagePath != null)
+                                        {
+                                            <div style="position: relative">
+                                                <img class="card-rounded-top card-img-top"
+                                                    src="~/@item.Property.MainImage.ImagePath" 
+                                                    alt="@item.Property.MainImage.ImagePath" />
+                                                <div class="overlay-div card-rounded-top"></div>
+                                            </div>
+                                        }
+                                        @{
+                                            var textColor = @item.Property.MainImage.ImagePath != null ? "text-white" : "";
+                                        }
+                                        <div class="card-img-overlay">
+                                            <div class="h-100">
+                                                <div class="h-100 p-2">
+                                                    <h2 class="property-title @textColor">
+                                                        <a class="@textColor" asp-controller="Properties"
+                                                   asp-action="Details" asp-route-id="@item.Property.Id">
+                                                            @Html.DisplayFor(modelItem => item.Property.PropertyTitle)
+                                                        </a>
+                                                    </h2>
+                                                    <p class="property-description @textColor" style="@textColor">
+                                                        @if (item.Property.PropertyDescription == null)
+                                                        {
+                                                            <span>There is no description for this property.</span>
+                                                        }
+                                                        @Html.DisplayFor(modelItem => item.Property.PropertyDescription)
+                                                    </p>
+
+                                                    <div class="pb-4">
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.StartDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">No. Days</label>
+                                                                <h2 class="@textColor">@item.totalNumberOfDays</h2>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.EndDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">Total Cost</label>
+                                                                <h2 class="@textColor">
+                                                                    <i class="fa-solid fa-dollar-sign"></i> @item.totalPrice
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @{
+                                            var style = @item.Property.MainImage.ImagePath == null ? "position: absolute; bottom: 0" : "";
+                                        }
+                                        <div class="row px-4 pb-3 w-100" style="@style">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h4 class="text-secondary">
+                                                        <i class="fa-solid fa-dollar-sign"></i>
+                                                        @Html.DisplayFor(modelItem => item.Property.PricePerDay)
+                                                        <br />
+                                                        <small style="text-transform: none;">per night</small>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+                <div class="col-12">
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            @if (@item.state == "past")
+                            {
+                                <div class="col-lg-6 my-2 col-md-6 p-0">
+                                    <div class="card grid-margin card-rounded h-100 d-flex flex-column justify-content-between p-0 property-card">
+                                        @if (@item.Property.MainImage.ImagePath != null)
+                                        {
+                                            <div style="position: relative">
+                                                <img class="card-rounded-top card-img-top" src="~/@item.Property.MainImage.ImagePath" alt="@item.Property.MainImage.ImagePath" />
+                                                <div class="overlay-div card-rounded-top"></div>
+                                            </div>
+                                        }
+                                        @{
+                                            var textColor = @item.Property.MainImage.ImagePath != null ? "text-white" : "";
+                                        }
+                                        <div class="card-img-overlay">
+                                            <div class="h-100">
+                                                <div class="h-100 p-2">
+                                                    <h2 class="property-title @textColor">
+                                                        <a class="@textColor" asp-controller="Properties"
+                                                   asp-action="Details" asp-route-id="@item.Property.Id">
+                                                            @Html.DisplayFor(modelItem => item.Property.PropertyTitle)
+                                                        </a>
+                                                    </h2>
+                                                    <p class="property-description @textColor" style="@textColor">
+                                                        @if (item.Property.PropertyDescription == null)
+                                                        {
+                                                            <span>There is no description for this property.</span>
+                                                        }
+                                                        @Html.DisplayFor(modelItem => item.Property.PropertyDescription)
+                                                    </p>
+                                                    <div class="pb-4">
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.StartDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">No. Days</label>
+                                                                <h2 class="@textColor">
+                                                                    @item.totalNumberOfDays
+                                                                </h2>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.EndDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">Total Cost</label>
+                                                                <h2 class="@textColor">
+                                                                    <i class="fa-solid fa-dollar-sign"></i> @item.totalPrice
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @{
+                                            var style = @item.Property.MainImage.ImagePath == null ? "position: absolute; bottom: 0" : "";
+                                        }
+                                        <div class="row px-4 pb-3 w-100" style="@style">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h4 class="text-secondary">
+                                                        <i class="fa-solid fa-dollar-sign"></i>
+                                                        @Html.DisplayFor(modelItem => item.Property.PricePerDay)
+                                                        <br />
+                                                        <small style="text-transform: none;">per night</small>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="future" role="tabpanel" aria-labelledby="future-tab">
+                <div class="col-12">
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            @if (@item.state == "up-coming")
+                            {
+                                <div class="col-lg-6 my-2 col-md-6 p-0" id="rental-container-@item.Id">
+                                    <div class="card grid-margin card-rounded h-100 d-flex flex-column justify-content-between p-0 property-card">
+                                        @if (@item.Property.MainImage.ImagePath != null)
+                                        {
+                                            <div style="position: relative">
+                                                <img class="card-rounded-top card-img-top" src="~/@item.Property.MainImage.ImagePath" alt="@item.Property.MainImage.ImagePath" />
+                                                <div class="overlay-div card-rounded-top"></div>
+                                            </div>
+                                        }
+                                        @{
+                                            var textColor = @item.Property.MainImage.ImagePath != null ? "text-white" : "";
+                                        }
+                                        <div class="card-img-overlay">
+                                            <div class="h-100">
+                                                <div class="h-100 p-2">
+                                                    <h2 class="property-title @textColor">
+                                                        <a class="@textColor" asp-controller="Properties"
+                                                   asp-action="Details" asp-route-id="@item.Property.Id">
+                                                            @Html.DisplayFor(modelItem => item.Property.PropertyTitle)
+                                                        </a>
+                                                    </h2>
+                                                    <p class="property-description @textColor" style="@textColor">
+                                                        @if (item.Property.PropertyDescription == null)
+                                                        {
+                                                            <span>There is no description for this property.</span>
+                                                        }
+                                                        @Html.DisplayFor(modelItem => item.Property.PropertyDescription)
+                                                    </p>
+                                                    <div class="pb-4">
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.StartDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">No. Days</label>
+                                                                <h2 class="@textColor">
+                                                                    @item.totalNumberOfDays
+                                                                </h2>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <label class="@textColor">@Html.DisplayNameFor(modelItem => item.EndDate)</label>
+                                                                <h4>
+                                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <label class="@textColor">Total Cost</label>
+                                                                <h2 class="@textColor">
+                                                                    <i class="fa-solid fa-dollar-sign"></i> @item.totalPrice
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal fade" id="exampleModal-@item.Id" tabindex="-1"
+                                                            aria-labelledby="exampleModalLabel-@item.Id" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="exampleModalLabel-@item.Id">Confirm Cancelation</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        Are you sure you want to cancel this rental?
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-primary">Go Back</button>
+                                                                        <button type="button" onclick="cancelRental(this)" class="btn btn-secondary" value="@item.Id" data-bs-dismiss="modal">Cancel Rental</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @{
+                                            var style = @item.Property.MainImage.ImagePath == null ? "position: absolute; bottom: 0" : "";
+                                        }
+                                        <div class="row px-4 pb-3 w-100" style="@style ; z-index: 10">
+                                            <div class="d-flex justify-content-between">
+                                                <h4 class="text-secondary">
+                                                    <i class="fa-solid fa-dollar-sign"></i>
+                                                    @Html.DisplayFor(modelItem => item.Property.PricePerDay)
+                                                    <br />
+                                                    <small style="text-transform: none;">per night</small>
+                                                </h4>
+                                                <div>
+                                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal-@item.Id" type="button">
+                                                        Cancel Rental
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

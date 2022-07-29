@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace I3302_RentLo_finals_project.Controllers
 {
@@ -20,6 +21,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Cities
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Index()
         {
               return _context.Cities != null ? 
@@ -28,6 +30,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Cities/Details/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Cities == null)
@@ -46,6 +49,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Cities/Create
+        [Authorize(Roles = "PropertyAdministrators")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +60,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Create([Bind("Id,CityName")] City city)
         {
             if (ModelState.IsValid)
@@ -68,6 +73,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Cities/Edit/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Cities == null)
@@ -88,6 +94,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CityName")] City city)
         {
             if (id != city.Id)
@@ -119,6 +126,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Cities/Delete/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Cities == null)
@@ -139,6 +147,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // POST: Cities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Cities == null)
@@ -155,6 +164,7 @@ namespace I3302_RentLo_finals_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "PropertyAdministrators")]
         private bool CityExists(int id)
         {
           return (_context.Cities?.Any(e => e.Id == id)).GetValueOrDefault();

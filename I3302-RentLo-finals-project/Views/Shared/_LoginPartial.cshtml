@@ -5,20 +5,31 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="">
-        <a class="nav-link"><i class="fa-solid fa-person-shelter"></i> My Rentals</a>
+        <a class="nav-link" asp-area="" asp-route-id="@UserManager.GetUserAsync(User).Result.Id" asp-controller="UserPropertyRents" asp-action="MyRentals"><i class="fa-solid fa-person-shelter"></i> My Rentals</a>
     </li>
-    <li class="">
-        <a class="nav-link" asp-area="" asp-route-id="@UserManager.GetUserAsync(User).Result.Id" asp-controller="Properties" asp-action="MyProperties">
-            <i class="fa-solid fa-house-user"></i> My Properties
-        </a>
-    </li>
+    @if (User.IsInRole("PropertyManagers") || User.IsInRole("PropertyAdministrators"))
+    {
+        <li class="">
+            <a class="nav-link" asp-area="" asp-route-id="@UserManager.GetUserAsync(User).Result.Id" asp-controller="Properties" asp-action="MyProperties">
+                <i class="fa-solid fa-house-user"></i> My Properties
+            </a>
+        </li>
+    }
+    @if (User.IsInRole("PropertyAdministrators"))
+    {
+        <li class="">
+            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">
+                <i class="fa-solid fa-gear"></i> Admin Dashboard
+            </a>
+        </li>
+    }
     <li class="">
         <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
             <i class="bi bi-person-fill"></i> @UserManager.GetUserAsync(User).Result.FirstName @UserManager.GetUserAsync(User).Result.LastName
         </a>
     </li>
     <li class="">
-        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Properties", new { area = "" })">
             <button type="submit" class="nav-link btn btn-link">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </button>

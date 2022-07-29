@@ -9,6 +9,8 @@ using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
 using Microsoft.AspNetCore.Authorization;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Microsoft.AspNetCore.Identity;
+using I3302_RentLo_finals_project.Authorization;
 
 namespace I3302_RentLo_finals_project.Controllers
 {
@@ -16,40 +18,100 @@ namespace I3302_RentLo_finals_project.Controllers
     {
         private readonly IHostingEnvironment _environment;
         private readonly ApplicationDbContext _context;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PropertiesController(ApplicationDbContext context, IHostingEnvironment environment)
+
+        public PropertiesController(
+            ApplicationDbContext context,
+            IHostingEnvironment environment,
+            IAuthorizationService authorizationService,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             this._environment = environment;
+            this._authorizationService = authorizationService;
+            this._userManager = userManager;
         }
 
         // GET: Properties
-        public async Task<IActionResult> Index()
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string searchString, int PropertyCategory, int PropertyCountry, int PropertyCity)
         {
-            var properties = _context.Property.ToList();
-            for (int i = 0; i < properties.Count(); i++)
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["PropertyCountry"] = PropertyCountry;
+
+            IQueryable<Property> properties = _context.Property;
+            List<Property> propertiesList;
+
+            if (!String.IsNullOrEmpty(searchString))
             {
-                var property_id = properties[i].Id;
+                properties = properties.Where(s => s.PropertyTitle.Contains(searchString)
+                                       || s.PropertyDescription.Contains(searchString));
+            }
+            if (PropertyCategory != 0)
+            {
+                properties = properties.Where(s => s.CategoryId == PropertyCategory);
+            }
+            if (PropertyCountry != 0)
+            {
+                var countryCities = from m in _context.Cities
+                                    where m.CountryId == PropertyCountry
+                                    select m.Id;
+                List<int> cityIds = countryCities.ToList();
+                properties = properties.Where(s => cityIds.Contains(s.CityId));
+            }
+            if (PropertyCity != 0)
+            {
+                properties = properties.Where(s => s.CityId == PropertyCity);
+            }
+
+            propertiesList = properties.ToList();
+            propertiesList.Reverse();
+
+            for (int i = 0; i < propertiesList.Count(); i++)
+            {
+                var property_id = propertiesList[i].Id;
+
+                Category category = _context.Categories.Where(x => x.Id == propertiesList[i].CategoryId).FirstOrDefault();
+                propertiesList[i].Category = category;
+
                 var images = _context.Images.Where(x => x.PropertyId == property_id).ToList();
                 if (images.Any())
                 {
-                    properties[i].MainImage = images[0];
+                    propertiesList[i].MainImage = images[0];
                 }
                 else
                 {
-                    properties[i].MainImage = new Image();
+                    propertiesList[i].MainImage = new Image();
                 }
             }
-            return View(properties);
+
+            var firstCountry = _context.Countries.FirstOrDefault();
+
+            var PropertyListModel = new PropertyListModel
+            {
+                Properties = propertiesList,
+                Categories = await _context.Categories.Distinct().ToListAsync(),
+                Countries = await _context.Countries.Distinct().ToListAsync(),
+                Cities = await _context.Cities.Where(x => x.CountryId == PropertyCountry).Distinct().ToListAsync()
+            };
+
+            return View(PropertyListModel);
         }
 
         // GET: My Properties
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
         public async Task<IActionResult> MyProperties(string id)
         {
             var properties = _context.Property.Where(x => x.CreatorId == id).ToList();
             for (int i = 0; i < properties.Count(); i++)
             {
                 var property_id = properties[i].Id;
+
+                Category category = _context.Categories.Where(x => x.Id == properties[i].CategoryId).FirstOrDefault();
+                properties[i].Category = category;
+
                 var images = _context.Images.Where(x => x.PropertyId == property_id).ToList();
                 if (images.Any())
                 {
@@ -60,10 +122,12 @@ namespace I3302_RentLo_finals_project.Controllers
                     properties[i].MainImage = new Image();
                 }
             }
+            properties.Reverse();
             return View(properties);
         }
 
         // GET: Properties/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Property == null)
@@ -110,21 +174,27 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Properties/Create
-        [Authorize]
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
         public IActionResult Create()
         {
             IEnumerable<Category> categoriesList = _context.Categories;
             ViewBag.categoriesList = categoriesList;
             IEnumerable<Country> countriesList = _context.Countries;
             ViewBag.countriesList = countriesList;
+            IEnumerable<City> citiesList = _context.Cities.Where(x => x.CountryId == 1).ToList();
+            ViewBag.citiesList = citiesList;
             return View();
         }
         [HttpGet]
         public IEnumerable<City> OnGetCitiesByCountryId()
         {
-            int countryId = Int32.Parse(Request.Query["countryId"]);
-            var cities = _context.Cities.Where(x => x.CountryId == countryId);
-            return cities;
+            if (Request.Query["countryId"] != "")
+            {
+                int countryId = Int32.Parse(Request.Query["countryId"]);
+                var cities = _context.Cities.Where(x => x.CountryId == countryId);
+                return cities;
+            }
+            return _context.Cities;
         }
 
         // POST: Properties/Create
@@ -132,8 +202,8 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Create([Bind("Id,PropertyTitle,PropertyDescription,ImagePaths,PricePerDay,MaxGuests,NumberOfBeds,NumberOfBathrooms,Favorites,CreatorId,CategoryId,CityId")] Property @property)
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
+        public async Task<IActionResult> Create([Bind("Id,PropertyTitle,PropertyDescription,ImagePaths,PricePerDay,CreatorId,CategoryId,CityId")] Property @property)
         {
             if (ModelState.IsValid)
             {
@@ -144,29 +214,32 @@ namespace I3302_RentLo_finals_project.Controllers
 
                 ICollection<IFormFile> images = @property.ImagePaths;
 
-                foreach (IFormFile image in images)
+                if (images != null)
                 {
-                    // Copy image to server
-                    string uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "uploaded", "properties");
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    image.CopyTo(new FileStream(filePath, FileMode.Create));
+                    foreach (IFormFile image in images)
+                    {
+                        // Copy image to server
+                        string uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "uploaded", "properties");
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        image.CopyTo(new FileStream(filePath, FileMode.Create));
 
-                    // Create Image in database
-                    Image new_image = new Image();
-                    new_image.PropertyId = property_id;
-                    new_image.ImagePath = Path.Combine("img", "uploaded", "properties", uniqueFileName);
+                        // Create Image in database
+                        Image new_image = new Image();
+                        new_image.PropertyId = property_id;
+                        new_image.ImagePath = Path.Combine("img", "uploaded", "properties", uniqueFileName);
 
-                    _context.Images.Add(new_image);
-                    await _context.SaveChangesAsync();
+                        _context.Images.Add(new_image);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyProperties), new {id = property.CreatorId});
             }
             return View(@property);
         }
 
-        [Authorize]
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
         // GET: Properties/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -180,6 +253,35 @@ namespace I3302_RentLo_finals_project.Controllers
             {
                 return NotFound();
             }
+
+            var isAuthorized = _authorizationService.AuthorizeAsync(
+                                            User, @property,
+                                            PropertyOperations.Update);
+
+            IEnumerable<Category> categoriesList = _context.Categories;
+            ViewBag.categoriesList = categoriesList;
+            IEnumerable<Country> countriesList = _context.Countries;
+            ViewBag.countriesList = countriesList;
+            IEnumerable<City> citiesList = _context.Cities.Where(x => x.CountryId == 1).ToList();
+            ViewBag.citiesList = citiesList;
+
+            ViewBag.creatorId = @property.CreatorId;
+
+            try
+            {
+                var images = _context.Images.Where(x => x.PropertyId == property.Id).ToList();
+                ViewBag.PropertyImages = images;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PropertyImages = null;
+            }
+
+            if (!isAuthorized.Result.Succeeded)
+            {
+                return Forbid();
+            }
+
             return View(@property);
         }
 
@@ -188,38 +290,46 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,PropertyTitle,PropertyDescription,PricePerDay,DateCreated,MaxGuests,NumberOfBeds,NumberOfBathrooms,Favorites")] Property @property)
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
+        public IActionResult Edit([Bind("Id,PropertyTitle,PropertyDescription,ImagePaths,PricePerDay,CreatorId,CategoryId,CityId")] Property obj)
         {
-            if (id != @property.Id)
+            var isAuthorized = _authorizationService.AuthorizeAsync(
+                                            User, obj,
+                                            PropertyOperations.Update);
+
+            if (!isAuthorized.Result.Succeeded)
             {
-                return NotFound();
+                return Forbid();
             }
 
-            if (ModelState.IsValid)
+            ICollection<IFormFile> images = obj.ImagePaths;
+            //var images = _context.Images.Where(x => x.PropertyId == property.Id).ToList();
+
+            if (images != null)
             {
-                try
+                foreach (IFormFile image in images)
                 {
-                    _context.Update(@property);
-                    await _context.SaveChangesAsync();
+                    // Copy image to server
+                    string uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "uploaded", "properties");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    image.CopyTo(new FileStream(filePath, FileMode.Create));
+
+                    // Create Image in database
+                    Image new_image = new Image();
+                    new_image.PropertyId = obj.Id;
+                    new_image.ImagePath = Path.Combine("img", "uploaded", "properties", uniqueFileName);
+
+                    _context.Images.Add(new_image);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PropertyExists(@property.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            return View(@property);
+
+            _context.Property.Update(obj);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
 
-        [Authorize]
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
         // GET: Properties/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -230,6 +340,16 @@ namespace I3302_RentLo_finals_project.Controllers
 
             var @property = await _context.Property
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var isAuthorized = _authorizationService.AuthorizeAsync(
+                                            User, @property,
+                                            PropertyOperations.Delete);
+
+            if (!isAuthorized.Result.Succeeded)
+            {
+                return Forbid();
+            }
+
             if (@property == null)
             {
                 return NotFound();
@@ -241,7 +361,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // POST: Properties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "PropertyAdministrators,PropertyManagers")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Property == null)
@@ -249,6 +369,16 @@ namespace I3302_RentLo_finals_project.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Property'  is null.");
             }
             var @property = await _context.Property.FindAsync(id);
+
+            var isAuthorized = _authorizationService.AuthorizeAsync(
+                                            User, @property,
+                                            PropertyOperations.Delete);
+
+            if (!isAuthorized.Result.Succeeded)
+            {
+                return Forbid();
+            }
+
             if (@property != null)
             {
                 _context.Property.Remove(@property);

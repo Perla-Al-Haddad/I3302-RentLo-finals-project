@@ -17,7 +17,7 @@ namespace I3302_RentLo_finals_project.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -123,18 +123,6 @@ namespace I3302_RentLo_finals_project.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Favorites")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxGuests")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfBathrooms")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfBeds")
-                        .HasColumnType("int");
 
                     b.Property<double>("PricePerDay")
                         .HasColumnType("float");
@@ -402,9 +390,6 @@ namespace I3302_RentLo_finals_project.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Biography")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -430,7 +415,7 @@ namespace I3302_RentLo_finals_project.Migrations
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.Image", b =>
                 {
                     b.HasOne("I3302_RentLo_finals_project.Models.Property", "Property")
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -538,6 +523,11 @@ namespace I3302_RentLo_finals_project.Migrations
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.Country", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("I3302_RentLo_finals_project.Models.Property", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("I3302_RentLo_finals_project.Models.ApplicationUser", b =>

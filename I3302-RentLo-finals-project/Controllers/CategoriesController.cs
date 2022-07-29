@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using I3302_RentLo_finals_project.Data;
 using I3302_RentLo_finals_project.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace I3302_RentLo_finals_project.Controllers
 {
@@ -20,6 +21,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Categories
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Index()
         {
               return _context.Categories != null ? 
@@ -28,6 +30,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Categories/Details/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Categories == null)
@@ -46,6 +49,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Categories/Create
+        [Authorize(Roles = "PropertyAdministrators")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +60,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Create([Bind("Id,CategoryDescription")] Category category)
         {
             if (ModelState.IsValid)
@@ -68,6 +73,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Categories/Edit/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Categories == null)
@@ -88,6 +94,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CategoryDescription")] Category category)
         {
             if (id != category.Id)
@@ -119,6 +126,7 @@ namespace I3302_RentLo_finals_project.Controllers
         }
 
         // GET: Categories/Delete/5
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Categories == null)
@@ -139,6 +147,7 @@ namespace I3302_RentLo_finals_project.Controllers
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "PropertyAdministrators")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Categories == null)
@@ -155,6 +164,7 @@ namespace I3302_RentLo_finals_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "PropertyAdministrators")]
         private bool CategoryExists(int id)
         {
           return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();

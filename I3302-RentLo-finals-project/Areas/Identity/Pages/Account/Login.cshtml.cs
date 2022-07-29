@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace I3302_RentLo_finals_project.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -84,7 +85,6 @@ namespace I3302_RentLo_finals_project.Areas.Identity.Pages.Account
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
         }
-
         public async Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
